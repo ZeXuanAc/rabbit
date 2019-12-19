@@ -25,9 +25,10 @@ public class Worker1 {
         final Connection connection = factory.newConnection();
         final Channel channel = connection.createChannel();
 
+        // 第二个参数表示队列需要持久化，不过根据幂次原理已经定义的队列，再次定义是无效的，所以这个队列还是不能持久化，需要重新定义一个新的队列
         channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
         System.out.println("Worker1 [*] Waiting for messages. To exit press CTRL+C");
-        // 每次从队列中获取数量
+        // 每次从队列中获取数量,这样做的好处是只有当消费者处理完成当前消息并反馈后，才会收到另外一条消息或任务。这样就避免了负载不均衡的事情了
         channel.basicQos(1);
 
         final Consumer consumer = new DefaultConsumer(channel) {
